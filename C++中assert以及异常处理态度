@@ -1,0 +1,111 @@
+关于断言
+
+断言（assertion）是 C 语言中常用的防御式编程方式，减少编程错误。最常用的是在函数开始的地方，检测所有参数。
+有时候也可以在调用函数后，检查上下文是否正确。
+
+C 语言的标准库含有 assert() 这个宏（需 #include <assert.h>），提供断言功能。
+当程序以 release 配置编译时（定义了 NDEBUG 宏），assert() 不会做检测；
+而当在 debug 配置时（没定义 NDEBUG 宏），则会在运行时检测 assert(cond) 中的条件是否为真（非 0），断言失败会直接令程序崩溃。
+例如上面的 lept_parse_null() 开始时，当前字符应该是 'n'，所以我们使用一个宏 EXPECT(c, ch) 进行断言，并跳到下一字符。
+
+初使用断言的同学，可能会错误地把含副作用的代码放在 assert() 中：
+assert(x++ == 0); /* 这是错误的! */
+这样会导致 debug 和 release 版的行为不一样。
+
+另一个问题是，初学者可能会难于分辨何时使用断言，何时处理运行时错误（如返回错误值或在 C++ 中抛出异常）。
+简单的答案是，如果那个错误是由于程序员错误编码所造成的（例如传入不合法的参数），那么应用断言；
+如果那个错误是程序员无法避免，而是由运行时的环境所造成的，就要处理运行时错误（例如开启文件失败）。
+（以上内容来自Milo Yip的github中json教程第一篇https://github.com/daiyq/json-tutorial/blob/master/tutorial01/tutorial01.md）
+
+（以下来自搜索内容http://www.cnblogs.com/ggzss/archive/2011/08/18/2145017.html）
+assert宏的原型定义在<assert.h>中，其作用是如果它的条件返回错误，则终止程序执行，原型定义：
+#include <assert.h>
+void assert( int expression );
+assert的作用是现计算表达式 expression ，如果其值为假（即为0），那么它先向stderr打印一条出错信息，然后通过调用 abort 来终止程序运行。
+请看下面的程序清单badptr.c：
+
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
+int main( void )
+{
+       FILE *fp;
+    
+       fp = fopen( "test.txt", "w" );//以可写的方式打开一个文件，如果不存在就创建一个同名文件
+       assert( fp );                           //所以这里不会出错
+       fclose( fp );
+    
+       fp = fopen( "noexitfile.txt", "r" );//以只读的方式打开一个文件，如果不存在就打开文件失败
+       assert( fp );                           //所以这里出错
+       fclose( fp );                           //程序永远都执行不到这里来
+       return 0;
+}
+
+[root@localhost error_process]# gcc badptr.c 
+[root@localhost error_process]# ./a.out 
+a.out: badptr.c:14: main: Assertion `fp' failed.
+
+已放弃使用assert()的缺点是，频繁的调用会极大的影响程序的性能，增加额外的开销。
+在调试结束后，可以通过在包含#include <assert.h>的语句之前插入 #define NDEBUG 来禁用assert调用，示例代码如下：
+#include <stdio.h>
+#define NDEBUG
+#include <assert.h>
+
+用法总结与注意事项：
+1）在函数开始处检验传入参数的合法性如：
+
+int resetBufferSize(int nNewSize)
+{
+　　//功能:改变缓冲区大小,
+　　//参数:nNewSize 缓冲区新长度
+　　//返回值:缓冲区当前长度 
+　　//说明:保持原信息内容不变     nNewSize<=0表示清除缓冲区
+　　assert(nNewSize >= 0);
+　　assert(nNewSize <= MAX_BUFFER_SIZE);
+　　...
+}
+　　
+2）每个assert只检验一个条件，因为同时检验多个条件时，如果断言失败，无法直观的判断是哪个条件失败，如：
+　　不好：
+assert(nOffset>=0 && nOffset+nSize<=m_nInfomationSize);
+　　好：
+assert(nOffset >= 0);
+assert(nOffset+nSize <= m_nInfomationSize);
+
+3）不能使用改变环境的语句，因为assert只在DEBUG个生效，如果这么做，会使用程序在真正运行时遇到问题，如：
+
+　　错误：
+assert(i++ < 100);
+　　这是因为如果出错，比如在执行之前i=100，那么这条语句就不会执行，那么i++这条命令就没有执行。
+
+　　正确：
+ assert(i < 100);
+ i++;
+4）assert和后面的语句应空一行，以形成逻辑和视觉上的一致感。
+
+5）有的地方，assert不能代替条件过滤。
+
+
+
+（知乎回答怎么使用C++异常？https://www.zhihu.com/question/22889420）
+vczh：
+异常，是用来报告你能恢复的那一类错误的。
+譬如说socket连server结果读着读着断了，抛一个异常，然后你就去善后。譬如说，用户输入了什么东西，一层一层传递下去之后你才能做validate，
+然后一检查发现不对，抛一个异常，然后你就去善后。
+对于异常捕捉来讲，你也只能catch你能处理的那些异常。
+
+我觉得STL里面很多异常就不该catch，譬如说越界啦，这些纯属你代码写的有问题。代码的bug是不能靠catch来解决的，必须让他暴露出来。
+所以，对于异常来说，你能恢复的（socket掉了什么的），那就catch了恢复。
+你不能恢复的（譬如说vector越界，或者干脆不是异常的access violation），那就在main函数里面catch(...)，备份好用户数据，
+然后调用API生成dump，发回你公司的服务器，然后让程序结束。
+
+很多C++程序员的问题，是在于catch了异常之后试图恢复他所不知道的那些情况，这个时候数据结构都已经乱掉了，你勉强让程序继续运行下去，是反社会反人类的。
+
+再说了，陈硕讲的那些什么构造函数复制构造函数复制函数析构函数什么的抛了异常，几乎都是因为代码写错了导致的，
+根本无需费心思保护，直接dump完挂掉就是。何必自寻烦恼。
+
+（也就是讲，怎么实现和怎么使用根本就是两回事！！使用的时候根本不要想太多，就根据以上轮子哥的判断。但是在写构造函数啊等等的时候，
+抛异常这就是代码写错的原因。这其中包括如Effective C++第八条所说的，不要让异常逃离析构函数。
+因为构造函数不能报错，所以异常用于构造函数中以面对出错的问题。（陈硕语）
+在构造函数过程中，如数组进行到一半异常，已经构造好的一半要析构；
+构造对象中，一部分已经构造完成，发生异常，就要清楚等等。这些都是属于写程序的问题，没有考虑到就属于程序写错的原因）
