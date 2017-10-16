@@ -87,6 +87,7 @@ assert(i++ < 100);
 
 
 
+异常处理，主要看看这个网站https://monoinfinito.wordpress.com/series/exception-handling-in-c/
 （知乎回答怎么使用C++异常？https://www.zhihu.com/question/22889420）
 vczh：
 异常，是用来报告你能恢复的那一类错误的。
