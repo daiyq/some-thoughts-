@@ -1,1 +1,6 @@
 查阅网址https://www.codeproject.com/Articles/418776/How-to-replace-recursive-functions-using-stack-and
+
+递归函数过深，有可能造成stack overflow
+一般解决办法有：1.replaceing with iterative（迭代） function
+               2.using stack（heap stack） and while-loop
+
