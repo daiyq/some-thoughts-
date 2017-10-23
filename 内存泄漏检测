@@ -1,5 +1,10 @@
 内存泄漏检测办法
-
+update：
+用这个方法：
+        http://www.cnblogs.com/skynet/archive/2011/02/20/1959162.html
+        
+        
+——————————————————分割线——————————————————————————————————————————————
 Windows下：
 可使用 Visual C++ 的 C Runtime Library（CRT） 检测内存泄漏
 首先，我们在两个 .c 文件首行插入这一段代码：
