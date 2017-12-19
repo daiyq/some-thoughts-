@@ -1,4 +1,14 @@
 内存泄漏检测办法
+
+
+update 2017/12/19
+用MSDN的CRT库方法，亲测好用
+https://msdn.microsoft.com/zh-cn/library/x98tx3cf.aspx
+（可以试验一下，无论是第一种在结尾写的那个，还是在开头写的那个，都是只要在main函数这个里面include一次就可以了，跟叶老师在教程里面的不一样，
+而且试验的两次，每次泄漏后检测的错误都是一样的，就是说两种方法都可以用）
+
+
+
 update：
 用这个方法：
         http://www.cnblogs.com/skynet/archive/2011/02/20/1959162.html
