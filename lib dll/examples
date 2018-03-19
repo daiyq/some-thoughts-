@@ -1,6 +1,6 @@
 
 examples for using lib and dll
 
-hello for producing .lib
-hellodll for producing .dll
+lib(hello) for producing .lib
+dll(hellodll) for producing .dll
 Projection1 using the two
