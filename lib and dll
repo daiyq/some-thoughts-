@@ -23,5 +23,21 @@ http://blog.csdn.net/luyan_abaci/article/details/48037843（这是和lib的生�
 其实，我查到的最简单的生成，就用一个一个宏，没有条件编译，就是下面这个网页所讲的
 http://blog.csdn.net/eastonwoo/article/details/902252
 
+宏的条件编译有一个解释和使用，如下面网页中所讲的
+http://blog.csdn.net/zddblog/article/details/7352917
+
 关于为什么生成dll也会生成lib的解释
 http://blog.csdn.net/luyan_abaci/article/details/48014807
+内容如下：
+
+静态库（*.lib）: 将*.cpp文件中的函数的地址和定义，以及函数之间的链接关系通通打包，生成的一个二进制文件；
+动态库（*.lib+*.dll）: 动态库的*.lib文件，打包的只是*.cpp文件中函数的地址和链接，函数的具体定义打包在*.dll文件中。
+
+联系：
+1.二者都不包含函数的声明部分，因此调用这两种库的时候，都需要包含相应的头文件（*.h）;
+2.静态库和动态库的*.lib文件，在生成可执行文件（*.exe）的时候，都将被打包进*.exe文件中；
+
+区别：
+1.静态库的*.lib文件远大于动态库的*.lib文件；
+2.动态库的*.dll文件作为可执行文件*.exe的附加文件加入到程序中，一般放在*.exe的同级目录下。
+
