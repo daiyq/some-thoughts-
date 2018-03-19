@@ -41,3 +41,6 @@ http://blog.csdn.net/luyan_abaci/article/details/48014807
 1.静态库的*.lib文件远大于动态库的*.lib文件；
 2.动态库的*.dll文件作为可执行文件*.exe的附加文件加入到程序中，一般放在*.exe的同级目录下。
 
+
+lib与dll 的较为深层次的解释如下所示
+http://blog.csdn.net/gshgsh1228/article/details/52141312
