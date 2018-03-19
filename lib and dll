@@ -1,0 +1,27 @@
+lib和dll的生成与使用
+
+lib与dll的生成与使用在网上已经有众多教程，但是许多已经随着VS变化更新变了，还有许多比较复杂，或者有一点错误。因此这里综合总结一下
+
+lib的生成与使用
+http://blog.csdn.net/luyan_abaci/article/details/48014807
+基本按照这篇文章来生成的，但是使用，在它写的配置属性上有错，正确的来自下面这个网页
+http://blog.csdn.net/gshgsh1228/article/details/52141312，其内容为
+1 第一步：项目->属性->C/C++->常规->附加包含目录(浏览.h文件的路径) 　　添加包含.h文件的目录
+2 第二步：项目->属性->链接器->输入->附加库目录(浏览.lib文件的路径)    添加包含.lib文件的目录
+3 第三步：项目->属性->链接器->输入->附加依赖项   　　　　　　　添加用到的lib 
+
+
+4 在要使用cpp文件前加入 #include <gtest/gtest.h>(注意文件的路径)
+
+
+dll的生成比较复杂，我猜这大概跟window的文件合格式和各种自己的调用有关
+先来谈谈使用，跟lib的使用一样，也是添加lib文件，没错，也是添加lib，原因后面会写到， 最重要的一点，需要把需要的dll文件拷贝到你现在的这个.exe目录下，
+否则编译会通过，但是Debug就会报错
+再来谈谈生成。
+MSDN的生成过程太过于复杂，而且还有点过时，下面的这个生成过程也是一样，显得太过于繁琐，主要是宏的使用加上条件编译，太难理解
+http://blog.csdn.net/luyan_abaci/article/details/48037843（这是和lib的生成，就是上个网页是同一个来源）
+其实，我查到的最简单的生成，就用一个一个宏，没有条件编译，就是下面这个网页所讲的
+http://blog.csdn.net/eastonwoo/article/details/902252
+
+关于为什么生成dll也会生成lib的解释
+http://blog.csdn.net/luyan_abaci/article/details/48014807
